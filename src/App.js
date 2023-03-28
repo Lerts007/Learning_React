@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePosts } from "./components/hooks/usePosts";
 import PostFilter from "./components/PostFilter";
 import PostForm from "./components/PostForm";
@@ -27,6 +27,10 @@ function App() {
 
   const [modal, setModal] = useState(false);
 
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
     setModal(false);
@@ -38,7 +42,6 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={fetchPosts}>Function</button>
       <MyButton style={{ marginTop: 30 }} onClick={() => setModal(true)}>
         Создать пост.
       </MyButton>
