@@ -6,9 +6,11 @@ import PostList from "./components/PostList";
 import MyButton from "./components/UI/button/MyButton";
 import MyModel from "./components/UI/MyModal/MyModal";
 import Loader from "./components/UI/Loader/Loader";
+import Pagination from "./components/UI/Pagination/Pagination";
 import { usePosts } from "./components/hooks/usePosts";
 import { useFetching } from "./components/hooks/useFetching";
 import "./style/App.css";
+import { getPageCount, getPagesArray } from "./utils/pages";
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -17,12 +19,17 @@ function App() {
     query: "",
   });
   const [modal, setModal] = useState(false);
-  const [fetchPosts, isPostsLoading, posrError] = useFetching(async () => {
-    const posts = await PostService.getAll();
-    setPosts(posts);
-  });
-
+  const [totalPages, setTotalPages] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+
+  const [fetchPosts, isPostsLoading, posrError] = useFetching(async () => {
+    const response = await PostService.getAll(limit, page);
+    setPosts(response.data);
+    const totalCount = response.headers["x-total-count"];
+    setTotalPages(getPageCount(totalCount, limit));
+  });
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
@@ -33,9 +40,13 @@ function App() {
     setPosts(posts.filter((p) => p.id !== post.id));
   };
 
+  const changePage = (page) => {
+    setPage(page);
+  };
+
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [page]);
 
   return (
     <div className="App">
@@ -61,6 +72,7 @@ function App() {
           title="Список постов 1"
         />
       )}
+      <Pagination page={page} changePage={changePage} totalPages={totalPages} />
     </div>
   );
 }
