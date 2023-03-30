@@ -16,10 +16,6 @@ const PostIdPage = () => {
   const [fetchComments, isComLoading, comerror] = useFetching( async (e) => {
     const response = await PostService.getCommentsByPostId(params.id)
     setComments(response.data)
-    // console.log(comments);
-    // comments.map(e => {
-    //   console.log(e.email);
-    // })
 
   })
 
@@ -40,7 +36,7 @@ const PostIdPage = () => {
         :<div>
           
           {comments.map(comm =>
-            <div style = {{marginTop: 15}}>
+            <div key={comm.id} style = {{marginTop: 15}}>
               <h5>{comm.email}fd</h5>
               <div>{comm.body}</div>
             </div>
